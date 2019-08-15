@@ -73,6 +73,18 @@
         "WebAppSku": {
             "type": "string",
             "defaultValue": "S1"
+        },
+        "StorageAccountSku": {
+            "type": "string",
+            "defaultValue": "StorageV2"
+        },
+        "StorageAccountKind": {
+            "type": "string",
+            "defaultValue": "Standard_LRS"
+        },
+        "AccessTier": {
+            "type": "string",
+            "defaultValue": "Hot"
         }
     },
     "variables": {
@@ -80,7 +92,7 @@
         "VNetTemplate": "https://raw.githubusercontent.com/iam-take/Public/master/Deploy-Vnet.JSON",
         "LBTemplate": "https://raw.githubusercontent.com/iam-take/Public/master/Deploy-LB.JSON",
         "KeyVaultTemplate": "",
-        "StorageAccountTemplate": "",
+        "StorageAccountTemplate": "https://raw.githubusercontent.com/iam-take/Public/master/Deploy-StorageAccount.JSON",
         "WebAppTemplate": "https://raw.githubusercontent.com/iam-take/Public/master/Deploy-WebApp.JSON", 
         "DeployVersion": "1.0.0.0"
     },
@@ -168,6 +180,36 @@
                     },
                     "LoadBalancerName": {
                         "value": "[parameters('LoadBalancerName')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "StorageAccountTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [],
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[variables('StorageAccountTemplate')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "Location": {
+                        "value": "[parameters('Location')]"
+                    },
+                    "StorageAccountName": {
+                        "value": "[parameters('StorageAccountName')]"
+                    },
+                    "AccessTier": {
+                        "value": "[parameters('AccessTier')]"
+                    },
+                    "StorageAccountSku": {
+                        "value": "[parameters('StorageAccountSku')]"
+                    },
+                    "StorageAccountKind": {
+                        "value": "[parameters('StorageAccountKind')]"
                     }
                 }
             }

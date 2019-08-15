@@ -1,0 +1,86 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "StorageAccountName": {
+            "type": "string",
+            "defaultValue": "sadefaultname",
+            "metadata": {
+                "description": "Select the location of the Resource"
+            }
+        },
+        "Location": {
+            "type": "string",
+            "defaultValue": "westeurope",
+            "allowedValues": [
+                "westeurope",
+                "northeurope"
+            ],
+            "metadata": {
+                "description": "Select the location of the Resource"
+            }
+        },
+        "AccessTier": {
+            "type": "string",
+            "defaultValue": "Hot",
+            "allowedValues": [
+                "Hot",
+                "Cool",
+                "Archive"
+            ],
+            "metadata": {
+                "description": "Select the access tier of the resource"
+            }
+        },
+        "StorageAccountSku": {
+            "type": "string",
+            "defaultValue": "Standard_LRS",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_GRS"
+            ],
+            "metadata": {
+                "description": "Select the sku of the Resource"
+            }
+        },
+        "StorageAccountKind": {
+            "type": "string",
+            "defaultValue": "StorageV2",
+            "allowedValues": [
+                "StorageV2",
+                "Storage"
+            ],
+            "metadata": {
+                "description": "Select the storage account kind of the Resource"
+            }
+        }
+    },
+    "variables": {
+        "DeployVersion": "1.0.0.0"
+    },
+    "resources": [
+        {
+            "name": "[parameters('StorageAccountName')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-04-01",
+            "location": "[parameters('Location')]",
+            "properties": {
+                "accessTier": "[parameters('AccessTier')]",
+                "supportsHttpsTrafficOnly": true,
+                "isHnsEnabled": true
+                },
+            "dependsOn": [],
+            "sku": {
+                "name": "[parameters('StorageAccountSku')]"
+                },
+            "kind": "[parameters('StorageAccountKind')]",
+            "tags": {
+                "Environment": "PROD",
+                "CreatedBy": "TakeBakker",
+                "Project": "Assesment",
+                "DeployVersion": "[variables('DeployVersion')]"
+                } 
+        }
+    ],
+    "outputs": {}
+}
