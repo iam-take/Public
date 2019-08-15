@@ -39,7 +39,7 @@
       }
     },
     "variables": {
-      "DeployVersion": "1.0.0.1"
+      "DeployVersion": "1.0.0.0"
     },
     "resources": [
       {
@@ -74,9 +74,9 @@
       }
     ],
     "outputs": {
-      "SubnetRef": {
+      "VNETID": {
         "type": "string",
-        "value":  "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnet1Name'))]"
+        "value":  "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('SubnetName'))]"
       }
     }
   }

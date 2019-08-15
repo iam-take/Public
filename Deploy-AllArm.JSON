@@ -1,0 +1,177 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "Location": {
+            "type": "string",
+            "defaultValue": "westeurope",
+            "allowedValues": [
+                "westeurope",
+                "northeurope"
+            ],
+            "metadata": {
+                "description": "The name of for the Storage Account to be created."
+            }
+        },
+        "ResourceGroup":{
+            "type":"string",
+            "defaultValue": "AZ-RG-TAKETEST",
+            "metadata": {
+                "description": "The name for the ResourceGroup"
+            }
+        },
+        "StorageAccountName": {
+            "type": "string",
+            "defaultValue": "azsataketest",
+            "metadata": {
+                "description": "The name of for the Storage Account to be created."
+            }
+        },
+        "VNetName":{
+            "type":"string",
+            "defaultValue": "AZ-VNET-TAKETEST",
+            "metadata": {
+                "description": "The name for the Virtual Network"
+            }
+        },
+        "VNetAddressPrefix": {
+            "type": "string",
+            "defaultValue": "192.168.0.0/16",
+            "metadata": {
+                "description": "The network prefix in IP4 notation. For example 10.0.0.0/16"
+            }
+        },
+        "SubnetName": {
+            "type": "string",
+            "defaultValue": "AZ-SN-TAKETEST",
+            "metadata": {
+                "description": "The name of for the subnet to be created."
+            }
+        },
+        "SubnetPrefix": {
+            "type": "string",
+            "defaultValue": "192.168.100.0/24",
+            "metadata": {
+                "description": "The Subnet prefix in IP4 notation. For example 10.0.1.0/24"
+            }
+        },
+        "LoadBalancerName": {
+            "type": "string",
+            "defaultValue": "TakeTest",
+            "metadata": {
+                "description": "The Name for the loadbalancer to be deployed"
+            }
+        },
+        "KeyVaultName": {
+            "type": "string",
+            "defaultValue": "AZ-KV-TAKETEST"
+        },
+        "WebAppName": {
+            "type": "string",
+            "defaultValue": "AZ-WA-TAKETEST"
+        },
+        "WebAppSku": {
+            "type": "string",
+            "defaultValue": "S1"
+        }
+    },
+    "variables": {
+        "ResourceGroupTemplate": "https://raw.githubusercontent.com/iam-take/Public/master/Deploy-ResourceGroup.JSON",
+        "VNetTemplate": "https://raw.githubusercontent.com/iam-take/Public/master/Deploy-Vnet.JSON",
+        "LBTemplate": "https://raw.githubusercontent.com/iam-take/Public/master/Deploy-LB.JSON",
+        "KeyVaultTemplate": "",
+        "StorageAccountTemplate": "",
+        "WebAppTemplate": "https://raw.githubusercontent.com/iam-take/Public/master/Deploy-WebApp.JSON", 
+        "DeployVersion": "1.0.0.0"
+    },
+    "resources": [
+        {
+            "apiVersion": "2015-01-01",
+            "name": "VNetTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[variables('VNetTemplate')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "VNetName": {
+                        "value": "[parameters('VNetName')]"
+                    },
+                    "VNetAddressPrefix":{
+                        "value": "[parameters('VNetAddressPrefix')]"
+                    },
+                    "SubnetName": {
+                        "value": "[parameters('SubnetName')]"
+                    },
+                    "SubnetPrefix": {
+                        "value": "[parameters('SubnetPrefix')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "LBTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "VNetTemplate"
+            ],
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[variables('LBTemplate')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "LoadBalancerName": {
+                        "value": "[parameters('LoadBalancerName')]"
+                    },
+                    "VNetName": {
+                        "value": "[parameters('VNetName')]"
+                    },
+                    "SubnetName": {
+                        "value": "[parameters('SubnetName')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "WebAppTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "LBTemplate"
+            ],
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[variables('WebAppTemplate')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "Location": {
+                        "value": "[parameters('Location')]"
+                    },
+                    "WebAppSku": {
+                        "value": "[parameters('WebAppSku')]"
+                    },
+                    "WebAppName": {
+                        "value": "[parameters('WebAppName')]"
+                    },
+                    "LoadBalancerName": {
+                        "value": "[parameters('LoadBalancerName')]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
