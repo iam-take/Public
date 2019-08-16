@@ -40,6 +40,9 @@
         "kind": "app",
         "name": "[variables('appServicePlanName')]",
         "location": "[parameters('location')]",
+        "identity": {
+          "type": "SystemAssigned"
+          },
         "properties": {},
         "dependsOn": [],
         "sku": {
