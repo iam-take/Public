@@ -94,10 +94,17 @@
         "metadata": {
           "description": "Specifies the value of the secret that you want to create."
         }
+      },
+      "WebAppName": {
+        "type": "string",
+        "metadata": {
+          "description": "The name of the webapp that needs to access the keyvault"
+        }
       }
     },
     "variables": {
-      "TenantId": "[subscription().tenantId]"
+      "TenantId": "[subscription().tenantId]",
+      "WebAppId": "[resourceId('Microsoft.Web/serverfarms', parameters('WebAppName'))]"
     },
     "resources": [
       {
@@ -112,7 +119,7 @@
           "tenantId": "[variables('TenantId')]",
           "accessPolicies": [
             {
-              "objectId": "[parameters('ObjectId')]",
+              "objectId": "[variables('WebAppId')]",
               "tenantId": "[variables('TenantId')]",
               "permissions": {
                 "keys": "[parameters('KeysPermissions')]",
