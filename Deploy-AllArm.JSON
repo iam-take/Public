@@ -10,14 +10,7 @@
                 "northeurope"
             ],
             "metadata": {
-                "description": "The name of for the Storage Account to be created."
-            }
-        },
-        "ResourceGroup":{
-            "type":"string",
-            "defaultValue": "AZ-RG-TAKETEST",
-            "metadata": {
-                "description": "The name for the ResourceGroup"
+                "description": "The location where resources are deployed in. "
             }
         },
         "StorageAccountName": {
@@ -64,27 +57,50 @@
         },
         "WebAppName": {
             "type": "string",
-            "defaultValue": "AZ-WA-TAKETEST"
+            "defaultValue": "AZ-WA-TAKETEST",
+            "metadata": {
+                "description": "The Name for the WebApp"
+            }
         },
         "WebAppSku": {
             "type": "string",
-            "defaultValue": "S1"
+            "defaultValue": "S1",
+            "metadata": {
+                "description": "The SKU for the WebApp"
+            }
         },
         "StorageAccountSku": {
             "type": "string",
-            "defaultValue": "Standard_LRS"
+            "defaultValue": "Standard_LRS",
+            "metadata": {
+                "description": "The SKU to use for the Storage Account"
+            }
         },
         "StorageAccountKind": {
             "type": "string",
-            "defaultValue": "StorageV2"
+            "defaultValue": "StorageV2",
+            "metadata": {
+                "description": "Type of storage account to deploy"
+            }
         },
         "AccessTier": {
             "type": "string",
-            "defaultValue": "Hot"
+            "defaultValue": "Hot",
+            "allowedValues": [
+                "Hot",
+                "Cold",
+                "Archive"
+            ],
+            "metadata": {
+                "description": "The Access tier for the storage account"
+            }
         },
         "KeyVaultName": {
             "type": "string",
-            "defaultValue": "AZ-KV-TAKETEST"
+            "defaultValue": "AZ-KV-TAKETEST",
+            "metadata": {
+                "description": "The Name for the KeyVault to be deployed"
+            }
         },
         "KeyVaultSku": {
             "type": "string",
@@ -93,6 +109,9 @@
               "Standard",
               "Premium"
             ],
+            "metadata": {
+                "description": "The SKU to use for the Key Vault Deployment"
+            }
         },
         "EnabledForDeployment": {
             "type": "bool",
@@ -101,6 +120,9 @@
               true,
               false
             ],
+            "metadata": {
+                "description": "Allow the KeyVault to be used for Deployment, default = false"
+            }
         },
         "EnabledForDiskEncryption": {
             "type": "bool",
@@ -109,6 +131,9 @@
               true,
               false
             ],
+            "metadata": {
+                "description": "Allow the KeyVault to be used for Disk Encryption, default = false"
+            }
         },
         "EnabledForTemplateDeployment": {
             "type": "bool",
@@ -117,13 +142,9 @@
               true,
               false
             ],
-        },
-        "ObjectId": {
-            "type": "string",
-            "defaultValue": "AZ-KV-TAKETEST",
             "metadata": {
-                "description": "Specifies the object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies. Get it by using Get-AzADUser or Get-AzADServicePrincipal cmdlets."
-              }
+                "description": "Allow the KeyVault to be used for Template Deployments, default = false"
+            }
         },
         "SecretName": {
             "type": "string",
@@ -139,15 +160,6 @@
               "description": "Specifies the value of the secret that you want to create."
             }
         },
-        "KeysPermissions": {
-            "type": "array",
-            "defaultValue": [
-              "list"
-            ],
-            "metadata": {
-              "description": "Specifies the permissions to keys in the vault. Valid values are: all, encrypt, decrypt, wrapKey, unwrapKey, sign, verify, get, list, create, update, import, delete, backup, restore, recover, and purge."
-            }
-        },
         "SecretsPermissions": {
             "type": "array",
             "defaultValue": [
@@ -159,13 +171,12 @@
         }
     },
     "variables": {
-        "ResourceGroupTemplate": "https://raw.githubusercontent.com/iam-take/Public/master/Deploy-ResourceGroup.JSON",
         "VNetTemplate": "https://raw.githubusercontent.com/iam-take/Public/master/Deploy-Vnet.JSON",
         "LBTemplate": "https://raw.githubusercontent.com/iam-take/Public/master/Deploy-LB.JSON",
         "KeyVaultTemplate": "https://raw.githubusercontent.com/iam-take/Public/master/Deploy-KeyVault.JSON",
         "StorageAccountTemplate": "https://raw.githubusercontent.com/iam-take/Public/master/Deploy-StorageAccount.JSON",
-        "WebAppTemplate": "https://raw.githubusercontent.com/iam-take/Public/master/Deploy-WebApp.JSON", 
-        "DeployVersion": "1.0.0.0"
+        "WebAppTemplate": "https://raw.githubusercontent.com/iam-take/Public/master/Deploy-WebApp.JSON",
+        "CreateKeyVaultAPSA": "https://raw.githubusercontent.com/iam-take/Public/master/CreateKeyVaultAPSA.JSON"
     },
     "resources": [
         {
@@ -289,7 +300,9 @@
             "apiVersion": "2015-01-01",
             "name": "KeyVaultTemplate",
             "type": "Microsoft.Resources/deployments",
-            "dependsOn": [],
+            "dependsOn": [
+                "WebAppTemplate"
+            ],
             "properties": {
                 "mode": "incremental",
                 "templateLink": {
@@ -312,12 +325,6 @@
                     "EnabledForTemplateDeployment": {
                         "value": "[parameters('EnabledForTemplateDeployment')]"
                     },
-                    "ObjectId": {
-                        "value": "[parameters('ObjectId')]"
-                    },
-                    "KeysPermissions": {
-                        "value": "[parameters('KeysPermissions')]"
-                    },
                     "SecretsPermissions": {
                         "value": "[parameters('SecretsPermissions')]"
                     },
@@ -329,6 +336,36 @@
                     },
                     "KeyVaultSku": {
                         "value": "[parameters('KeyVaultSku')]"
+                    },
+                    "WebAppName":{
+                        "value": "[parameters('WebAppName')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "CreateKeyVaultAPSA",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "KeyVaultTemplate",
+                "StorageAccountTemplate"
+            ],
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[variables('CreateKeyVaultAPSA')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "KeyVaultName": {
+                        "value": "[parameters('KeyVaultName')]"
+                    },
+                    "StorageAccountName": {
+                        "value": "[parameters('StorageAccountName')]"
+                    },
+                    "secretsPermissions": {
+                        "value": "[parameters('secretsPermissions')]"
                     }
                 }
             }

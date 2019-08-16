@@ -29,7 +29,6 @@
     }
   },
   "variables": {
-    "NICName": "[concat('AZ-NIC-', parameters('LoadBalancerName'))]",
     "LoadBalancerName": "[concat('AZ-LB-', parameters('LoadBalancerName'))]",
     "SubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNetName'), parameters('SubnetName'))]"
   },

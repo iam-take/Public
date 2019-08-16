@@ -64,6 +64,9 @@
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-04-01",
             "location": "[parameters('Location')]",
+            "identity": {
+                "type": "SystemAssigned"
+              },
             "properties": {
                 "accessTier": "[parameters('AccessTier')]",
                 "supportsHttpsTrafficOnly": true,

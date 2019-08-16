@@ -48,15 +48,6 @@
           "description": "Specifies whether Azure Resource Manager is permitted to retrieve secrets from the key vault."
         }
       },
-      "KeysPermissions": {
-        "type": "array",
-        "defaultValue": [
-          "list"
-        ],
-        "metadata": {
-          "description": "Specifies the permissions to keys in the vault. Valid values are: all, encrypt, decrypt, wrapKey, unwrapKey, sign, verify, get, list, create, update, import, delete, backup, restore, recover, and purge."
-        }
-      },
       "SecretsPermissions": {
         "type": "array",
         "defaultValue": [
@@ -97,7 +88,8 @@
       }
     },
     "variables": {
-      "TenantId": "[subscription().tenantId]"
+      "TenantId": "[subscription().tenantId]",
+      "WebAppId": "[concat(resourceId('Microsoft.Web/sites', parameters('WebAppName')),'/providers/Microsoft.ManagedIdentity/Identities/default')]"
     },
     "resources": [
       {
@@ -110,6 +102,15 @@
           "enabledForDiskEncryption": "[parameters('EnabledForDiskEncryption')]",
           "enabledForTemplateDeployment": "[parameters('EnabledForTemplateDeployment')]",
           "tenantId": "[variables('TenantId')]",
+          "accessPolicies": [
+            {
+              "objectId": "[reference(variables('WebAppId'), '2015-08-31-PREVIEW').principalId]",
+              "tenantId": "[variables('TenantId')]",
+              "permissions": {
+                "secrets": "[parameters('SecretsPermissions')]"      
+              }
+            }
+          ],
           "sku": {
             "name": "[parameters('KeyVaultSku')]",
             "family": "A"
