@@ -62,10 +62,6 @@
                 "description": "The Name for the loadbalancer to be deployed"
             }
         },
-        "KeyVaultName": {
-            "type": "string",
-            "defaultValue": "AZ-KV-TAKETEST"
-        },
         "WebAppName": {
             "type": "string",
             "defaultValue": "AZ-WA-TAKETEST"
@@ -76,22 +72,97 @@
         },
         "StorageAccountSku": {
             "type": "string",
-            "defaultValue": "StorageV2"
+            "defaultValue": "Standard_LRS"
         },
         "StorageAccountKind": {
             "type": "string",
-            "defaultValue": "Standard_LRS"
+            "defaultValue": "StorageV2"
         },
         "AccessTier": {
             "type": "string",
             "defaultValue": "Hot"
+        },
+        "KeyVaultName": {
+            "type": "string",
+            "defaultValue": "AZ-KV-TAKETEST"
+        },
+        "KeyVaultSku": {
+            "type": "string",
+            "defaultValue": "Standard",
+            "allowedValues": [
+              "Standard",
+              "Premium"
+            ],
+        },
+        "EnabledForDeployment": {
+            "type": "bool",
+            "defaultValue": false,
+            "allowedValues": [
+              true,
+              false
+            ],
+        },
+        "EnabledForDiskEncryption": {
+            "type": "bool",
+            "defaultValue": false,
+            "allowedValues": [
+              true,
+              false
+            ],
+        },
+        "EnabledForTemplateDeployment": {
+            "type": "bool",
+            "defaultValue": false,
+            "allowedValues": [
+              true,
+              false
+            ],
+        },
+        "ObjectId": {
+            "type": "string",
+            "defaultValue": "AZ-KV-TAKETEST",
+            "metadata": {
+                "description": "Specifies the object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies. Get it by using Get-AzADUser or Get-AzADServicePrincipal cmdlets."
+              }
+        },
+        "SecretName": {
+            "type": "string",
+            "defaultValue": "SentiaSecret",
+            "metadata": {
+              "description": "Specifies the name of the secret that you want to create."
+            }
+        },
+        "SecretValue": {
+            "type": "securestring",
+            "defaultValue": "HelloSentia",
+            "metadata": {
+              "description": "Specifies the value of the secret that you want to create."
+            }
+        },
+        "KeysPermissions": {
+            "type": "array",
+            "defaultValue": [
+              "list"
+            ],
+            "metadata": {
+              "description": "Specifies the permissions to keys in the vault. Valid values are: all, encrypt, decrypt, wrapKey, unwrapKey, sign, verify, get, list, create, update, import, delete, backup, restore, recover, and purge."
+            }
+        },
+        "SecretsPermissions": {
+            "type": "array",
+            "defaultValue": [
+              "list"
+            ],
+            "metadata": {
+              "description": "Specifies the permissions to secrets in the vault. Valid values are: all, get, list, set, delete, backup, restore, recover, and purge."
+            }
         }
     },
     "variables": {
         "ResourceGroupTemplate": "https://raw.githubusercontent.com/iam-take/Public/master/Deploy-ResourceGroup.JSON",
         "VNetTemplate": "https://raw.githubusercontent.com/iam-take/Public/master/Deploy-Vnet.JSON",
         "LBTemplate": "https://raw.githubusercontent.com/iam-take/Public/master/Deploy-LB.JSON",
-        "KeyVaultTemplate": "",
+        "KeyVaultTemplate": "https://raw.githubusercontent.com/iam-take/Public/master/Deploy-KeyVault.JSON",
         "StorageAccountTemplate": "https://raw.githubusercontent.com/iam-take/Public/master/Deploy-StorageAccount.JSON",
         "WebAppTemplate": "https://raw.githubusercontent.com/iam-take/Public/master/Deploy-WebApp.JSON", 
         "DeployVersion": "1.0.0.0"
@@ -210,6 +281,54 @@
                     },
                     "StorageAccountKind": {
                         "value": "[parameters('StorageAccountKind')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-01-01",
+            "name": "KeyVaultTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [],
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[variables('KeyVaultTemplate')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "Location": {
+                        "value": "[parameters('Location')]"
+                    },
+                    "KeyVaultName": {
+                        "value": "[parameters('KeyVaultName')]"
+                    },
+                    "EnabledForDeployment": {
+                        "value": "[parameters('EnabledForDeployment')]"
+                    },
+                    "EnabledForDiskEncryption": {
+                        "value": "[parameters('EnabledForDiskEncryption')]"
+                    },
+                    "EnabledForTemplateDeployment": {
+                        "value": "[parameters('EnabledForTemplateDeployment')]"
+                    },
+                    "ObjectId": {
+                        "value": "[parameters('ObjectId')]"
+                    },
+                    "KeysPermissions": {
+                        "value": "[parameters('KeysPermissions')]"
+                    },
+                    "SecretsPermissions": {
+                        "value": "[parameters('SecretsPermissions')]"
+                    },
+                    "SecretName": {
+                        "value": "[parameters('SecretName')]"
+                    },
+                    "SecretValue": {
+                        "value": "[parameters('SecretValue')]"
+                    },
+                    "KeyVaultSku": {
+                        "value": "[parameters('KeyVaultSku')]"
                     }
                 }
             }

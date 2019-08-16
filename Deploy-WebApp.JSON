@@ -57,7 +57,7 @@
           "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
           "loadBalancerBackendAddressPools": [
             {
-              "id": "[concat(resourceId('Microsoft.Network/loadBalancers', parameters('LoadBalancerName')),'/backendAddressPools/loadBalancerBackEnd')]"
+               "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('LoadBalancerName')),'/backendAddressPools/loadBalancerBackEnd')]"
             }
           ]
         },
