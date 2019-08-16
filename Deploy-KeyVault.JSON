@@ -104,7 +104,7 @@
     },
     "variables": {
       "TenantId": "[subscription().tenantId]",
-      "WebAppId": "[resourceId('Microsoft.Web/serverfarms', parameters('WebAppName'))]"
+      "WebAppId": "[resourceId('Microsoft.Web/sites', parameters('WebAppName'))]"
     },
     "resources": [
       {
