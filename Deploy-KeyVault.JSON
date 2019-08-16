@@ -48,12 +48,6 @@
           "description": "Specifies whether Azure Resource Manager is permitted to retrieve secrets from the key vault."
         }
       },
-      "ObjectId": {
-        "type": "string",
-        "metadata": {
-          "description": "Specifies the object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies. Get it by using Get-AzADUser or Get-AzADServicePrincipal cmdlets."
-        }
-      },
       "KeysPermissions": {
         "type": "array",
         "defaultValue": [
@@ -103,8 +97,7 @@
       }
     },
     "variables": {
-      "TenantId": "[subscription().tenantId]",
-      "WebAppId": "[concat(resourceId('Microsoft.Web/sites', parameters('WebAppName')),'/providers/Microsoft.ManagedIdentity/Identities/default')]"
+      "TenantId": "[subscription().tenantId]"
     },
     "resources": [
       {
@@ -117,15 +110,6 @@
           "enabledForDiskEncryption": "[parameters('EnabledForDiskEncryption')]",
           "enabledForTemplateDeployment": "[parameters('EnabledForTemplateDeployment')]",
           "tenantId": "[variables('TenantId')]",
-          "accessPolicies": [
-            {
-              "objectId": "[reference(variables('WebAppId'), '2015-08-31-PREVIEW').principalId]",
-              "tenantId": "[variables('TenantId')]",
-              "permissions": {
-                "keys": "[parameters('KeysPermissions')]",
-                "secrets": "[parameters('SecretsPermissions')]"      
-              }
-            }
           ],
           "sku": {
             "name": "[parameters('KeyVaultSku')]",
