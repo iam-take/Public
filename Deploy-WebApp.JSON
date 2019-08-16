@@ -40,9 +40,6 @@
         "kind": "app",
         "name": "[variables('appServicePlanName')]",
         "location": "[parameters('location')]",
-        "identity": {
-          "type": "SystemAssigned"
-          },
         "properties": {},
         "dependsOn": [],
         "sku": {
@@ -55,6 +52,9 @@
         "kind": "app",
         "name": "[parameters('WebAppName')]",
         "location": "[parameters('location')]",
+        "identity": {
+          "type": "SystemAssigned"
+        },
         "properties": {
           "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
           "loadBalancerBackendAddressPools": [

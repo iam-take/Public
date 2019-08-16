@@ -119,7 +119,7 @@
           "tenantId": "[variables('TenantId')]",
           "accessPolicies": [
             {
-              "objectId": "[variables('WebAppId')]",
+              "objectId": "[reference(variables('WebAppId'), '2015-08-31-PREVIEW').principalId]",
               "tenantId": "[variables('TenantId')]",
               "permissions": {
                 "keys": "[parameters('KeysPermissions')]",
