@@ -110,7 +110,6 @@
           "enabledForDiskEncryption": "[parameters('EnabledForDiskEncryption')]",
           "enabledForTemplateDeployment": "[parameters('EnabledForTemplateDeployment')]",
           "tenantId": "[variables('TenantId')]",
-          ],
           "sku": {
             "name": "[parameters('KeyVaultSku')]",
             "family": "A"
